@@ -18,7 +18,7 @@ This project builds a **prototype healthcare supply chain risk dashboard** using
 
 - **Composite Risk Scoring** — Weighted multi-signal scoring per drug (recurrence, duration, cause severity, current status)
 - **Anomaly Detection** — Z-score analysis flagging therapeutic categories with statistically disproportionate disruption
-- **Interactive Dashboard** — Filterable risk leaderboards, shortage cause breakdowns, time-series trends, and supplier concentration analysis
+- **Interactive Dashboard** — A six-view Tableau workbook with filterable risk leaderboards, shortage cause breakdowns, time-series trends, and supplier concentration analysis
 
 ### Key Findings
 
@@ -44,7 +44,7 @@ Each component maps directly to a capability Exiger delivers in production:
 | Composite risk score per drug | Risk scoring incorporating supplier health, geographic exposure, dependency mapping |
 | Geographic/category concentration analysis | SDX geographic visualization of supply tiers and country-of-origin analysis |
 | Anomaly detection on therapeutic categories | 1Exiger early-signal detection for disruption and supply chain resilience |
-| Interactive stakeholder dashboard | Custom reports and dashboards for policymakers and government agencies |
+| Interactive Tableau workbook for stakeholders | Custom reports and dashboards for policymakers and government agencies |
 | ETL pipeline from FDA API | Data ingestion and enrichment from public and proprietary data sources |
 
 ---
@@ -83,12 +83,19 @@ Each component maps directly to a capability Exiger delivers in production:
          └───────────┬───────────┘
                      ▼
 ┌──────────────────────────────────────────────────────┐
-│              Interactive Dashboard                   │
+│           Tableau Export Layer (flat CSVs)           │
+│  • Fact + dimension tables, bridge tables            │
+│  • Pre-aggregated KPI and trend tables               │
+└──────────────────────┬───────────────────────────────┘
+                       │
+                       ▼
+┌──────────────────────────────────────────────────────┐
+│        Tableau Workbook (6 dashboards, 23 sheets)    │
 │  • Risk Leaderboard (sortable, filterable)           │
-│  • Shortage Reason Breakdown (pie + bar)             │
-│  • Therapeutic Category Heatmap + Anomaly Flags      │
-│  • Time-Series Trend Analysis                        │
-│  • Supplier Concentration Risk                       │
+│  • Shortage Causes (donut + ranked bars)             │
+│  • Category Analysis (heatmap + anomaly flags)       │
+│  • Time Series (yearly trend, monthly anomalies)     │
+│  • Supplier Risk (concentration, single-source)      │
 │  • Methodology & Exiger Alignment                    │
 └──────────────────────────────────────────────────────┘
 ```
@@ -147,6 +154,7 @@ Flag if |z| > 1.5
 ### Prerequisites
 - Python 3.10+
 - pip
+- Tableau Desktop or Tableau Public (2022.4+) to open the workbook
 
 ### Installation
 
@@ -182,10 +190,28 @@ python -m src.risk_scoring
 python -m src.anomaly_detection
 ```
 
-### Run the Dashboard
+### Export the Tableau Data Layer
+
 ```bash
-streamlit run src/dashboard.py
+python -m src.export_tableau
 ```
+
+Writes 14 Tableau-ready flat CSVs to `data/tableau/` — a shortage-event fact table, drug-level
+risk scores, exploded bridge tables for the multi-value fields (categories, suppliers, reasons),
+anomaly output, and pre-aggregated helper tables.
+
+### Open the Dashboard
+
+```
+dashboard/fda-supply-chain-risk-dashboard.twbx
+```
+
+The packaged workbook bundles extracts of the exported data, so it opens standalone — no live
+connection to `data/tableau/` is required. To refresh it against newly exported CSVs, re-run
+`src.export_tableau`, then **Data → Refresh All Extracts** in Tableau.
+
+**Dashboards:** Risk Leaderboard · Shortage Causes · Category Analysis · Time Series ·
+Supplier Risk · Methodology (23 underlying worksheets).
 
 ---
 
@@ -199,12 +225,15 @@ fda-supply-chain-risk/
 ├── src/
 │   ├── etl_pipeline.py              # Data ingestion, cleaning, standardization
 │   ├── risk_scoring.py              # Composite risk scoring engine
-│   └── anomaly_detection.py         # Z-score anomaly detection
+│   ├── anomaly_detection.py         # Z-score anomaly detection
+│   └── export_tableau.py            # Flatten processed data into Tableau CSVs
 ├── data/
 │   ├── raw/                         # Raw FDA API responses
-│   └── processed/                   # Cleaned data, risk scores, anomaly results
+│   ├── processed/                   # Cleaned data, risk scores, anomaly results
+│   └── tableau/                     # Flat CSVs + extracts for Tableau
 └── dashboard/
-    └── fda_risk_dashboard.jsx       # Interactive React dashboard
+    ├── fda-supply-chain-risk-dashboard.twbx  # Packaged Tableau workbook
+    └── fda_supply_chain_risk_dashboard.jsx   # React prototype of the same views
 ```
 
 ---
@@ -216,7 +245,8 @@ fda-supply-chain-risk/
 | Data Ingestion | Python (requests, pandas) | Standard DS stack |
 | Risk Scoring | NumPy, SciPy | Statistical computation, normalization |
 | Anomaly Detection | NumPy (Z-scores) | Statistical outlier detection |
-| Visualization | React, Recharts | Interactive dashboard for stakeholders |
+| Visualization | Tableau (packaged .twbx) | Interactive dashboards for non-technical stakeholders |
+| BI Data Layer | Flat CSV star schema + bridge tables | Clean, extract-friendly model for Tableau |
 | Data Source | FDA openFDA API | Public drug shortage data |
 
 ---

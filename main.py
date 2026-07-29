@@ -5,11 +5,12 @@ Main entry point. Runs the full pipeline:
   1. ETL: Ingest and clean FDA shortage data
   2. Risk Scoring: Compute composite risk scores per drug
   3. Anomaly Detection: Flag statistical outliers
-  4. Dashboard: Launch interactive Streamlit application
+
+The dashboard is a Tableau workbook fed by src.export_tableau; see README.md.
 
 Usage:
-    python main.py              # Run full pipeline + dashboard
-    python main.py --pipeline   # Run pipeline only (no dashboard)
+    python main.py              # Run full pipeline
+    python main.py --pipeline   # Same, minus the closing next-steps hint
 
 Author: Alexander Peralta
 """
@@ -31,7 +32,6 @@ from src.anomaly_detection import (
 def main():
     pipeline_only = "--pipeline" in sys.argv
 
-    # ─── STEP 1: ETL PIPELINE ───────────────────────────
     raw_file = "data/raw/fda_shortages_raw.json"
     if os.path.exists(raw_file):
         print(f"Found existing raw data at {raw_file}")
@@ -41,7 +41,6 @@ def main():
     else:
         cleaned = run_pipeline()
 
-    # ─── STEP 2: RISK SCORING ───────────────────────────
     print("\n" + "=" * 60)
     print("STEP 3: RISK SCORING ENGINE")
     print("=" * 60)
@@ -53,7 +52,6 @@ def main():
     with open("data/processed/drug_risk_scores.json", "w") as f:
         json.dump(drug_scores, f, indent=2)
 
-    # ─── STEP 3: ANOMALY DETECTION ──────────────────────
     print("\n" + "=" * 60)
     print("STEP 4: ANOMALY DETECTION")
     print("=" * 60)
@@ -71,7 +69,6 @@ def main():
     with open("data/processed/anomaly_results.json", "w") as f:
         json.dump(anomaly_output, f, indent=2, default=str)
 
-    # ─── SUMMARY ────────────────────────────────────────
     print("\n" + "=" * 60)
     print("PIPELINE COMPLETE")
     print("=" * 60)
@@ -81,8 +78,9 @@ def main():
     print(f"  Anomalous categories: {sum(1 for a in cat_anomalies if a['is_anomaly'])}")
 
     if not pipeline_only:
-        print("\n  To launch the dashboard:")
-        print("    streamlit run src/dashboard.py")
+        print("\n  To refresh the dashboard data:")
+        print("    python -m src.export_tableau")
+        print("  Then open dashboard/fda-supply-chain-risk-dashboard.twbx in Tableau")
 
 
 if __name__ == "__main__":
