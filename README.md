@@ -12,13 +12,13 @@
 
 ## Overview
 
-Healthcare supply chains are opaque. Active pharmaceutical ingredients are heavily sourced from countries representing geopolitical risk, country-of-origin labeling is inconsistent, and consolidation among generic manufacturers has reduced competition — leading to shortages and price volatility.
+Healthcare supply chains are opaque. Active pharmaceutical ingredients are heavily sourced from countries representing geopolitical risk, country-of-origin labeling is inconsistent, and consolidation among generic manufacturers has reduced competition, leading to shortages and price volatility.
 
 This project builds a **prototype healthcare supply chain risk dashboard** using publicly available FDA Drug Shortage data. It implements:
 
-- **Composite Risk Scoring** — Weighted multi-signal scoring per drug (recurrence, duration, cause severity, current status)
-- **Anomaly Detection** — Z-score analysis flagging therapeutic categories with statistically disproportionate disruption
-- **Interactive Dashboard** — A six-view Tableau workbook with filterable risk leaderboards, shortage cause breakdowns, time-series trends, and supplier concentration analysis
+- **Composite Risk Scoring**: Weighted multi-signal scoring per drug (recurrence, duration, cause severity, current status)
+- **Anomaly Detection**: Z-score analysis flagging therapeutic categories with statistically disproportionate disruption
+- **Interactive Dashboard**: A six-view Tableau workbook with filterable risk leaderboards, shortage cause breakdowns, time-series trends, and supplier concentration analysis
 
 ### Key Findings
 
@@ -31,7 +31,7 @@ This project builds a **prototype healthcare supply chain risk dashboard** using
 | Anomalous therapeutic categories | 3 (Anesthesia, Psychiatry, Pediatric) |
 | Average shortage duration | 5.5 years |
 
-**Highest-risk drug:** Lidocaine Hydrochloride Injection (score: 85.7) — 70 shortage events, 12+ year average duration, actively unavailable from multiple suppliers.
+**Highest-risk drug:** Lidocaine Hydrochloride Injection (score: 85.7); 70 shortage events, 12+ year average duration, actively unavailable from multiple suppliers.
 
 ---
 
@@ -112,22 +112,22 @@ Risk = 0.30 × Recurrence + 0.25 × Duration + 0.25 × CauseSeverity + 0.20 × S
 
 ### Signal Definitions
 
-**Recurrence Frequency (30%)** — Normalized count of shortage events per drug. Drugs with chronic, repeated shortages receive the highest scores.
+**Recurrence Frequency (30%)**: Normalized count of shortage events per drug. Drugs with chronic, repeated shortages receive the highest scores.
 
-**Shortage Duration (25%)** — Average days in shortage state, normalized against the maximum observed duration. Longer shortages indicate deeper supply chain fragility (structural, not transient).
+**Shortage Duration (25%)**: Average days in shortage state, normalized against the maximum observed duration. Longer shortages indicate deeper supply chain fragility (structural, not transient).
 
-**Cause Severity (25%)** — Highest-severity cause observed across all shortage events for a drug:
+**Cause Severity (25%)**: Highest-severity cause observed across all shortage events for a drug:
 
 | Cause | Score | Rationale |
 |-------|-------|-----------|
-| Raw Material / API Shortage | 100 | Upstream dependency failure — hardest to resolve |
+| Raw Material / API Shortage | 100 | Upstream dependency failure; hardest to resolve |
 | Manufacturing / Quality | 85 | GMP violations, facility shutdowns |
 | Discontinuation | 80 | Permanent supply loss |
 | Regulatory | 70 | Compliance-driven disruption |
 | Shipping / Logistics | 50 | Usually transient |
 | Demand Increase | 40 | Demand-side spike, typically temporary |
 
-**Current Status (20%)** — Active + unavailable = 100, Active only = 80, Resolved = 20.
+**Current Status (20%)**: Active + unavailable = 100, Active only = 80, Resolved = 20.
 
 ---
 
@@ -143,9 +143,9 @@ Flag if |z| > 1.5
 ```
 
 **Flagged categories:**
-- **Anesthesia** (z = 2.25) — 341 shortage records, driven by injectable anesthetic supply chain fragility
-- **Psychiatry** (z = 1.73) — 288 records, reflecting stimulant medication shortages (Adderall, Vyvanse)
-- **Pediatric** (z = 1.69) — 284 records, cross-cutting category reflecting pediatric formulation vulnerability
+- **Anesthesia** (z = 2.25): 341 shortage records, driven by injectable anesthetic supply chain fragility
+- **Psychiatry** (z = 1.73): 288 records, reflecting stimulant medication shortages (Adderall, Vyvanse)
+- **Pediatric** (z = 1.69): 284 records, cross-cutting category reflecting pediatric formulation vulnerability
 
 ---
 
@@ -196,9 +196,9 @@ python -m src.anomaly_detection
 python -m src.export_tableau
 ```
 
-Writes 14 Tableau-ready flat CSVs to `data/tableau/` — a shortage-event fact table, drug-level
-risk scores, exploded bridge tables for the multi-value fields (categories, suppliers, reasons),
-anomaly output, and pre-aggregated helper tables.
+Writes 14 Tableau-ready flat CSVs to `data/tableau/`, including a shortage-event fact table, 
+drug-level risk scores, exploded bridge tables for the multi-value fields (categories, 
+suppliers, reasons), anomaly output, and pre-aggregated helper tables.
 
 ### Open the Dashboard
 
@@ -206,7 +206,7 @@ anomaly output, and pre-aggregated helper tables.
 dashboard/fda-supply-chain-risk-dashboard.twbx
 ```
 
-The packaged workbook bundles extracts of the exported data, so it opens standalone — no live
+The packaged workbook bundles extracts of the exported data, so it opens standalone; no live
 connection to `data/tableau/` is required. To refresh it against newly exported CSVs, re-run
 `src.export_tableau`, then **Data → Refresh All Extracts** in Tableau.
 
