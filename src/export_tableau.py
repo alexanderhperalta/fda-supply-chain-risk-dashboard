@@ -1,10 +1,5 @@
 """Export processed pipeline output to Tableau-ready flat CSVs.
 
-Tableau (and Tableau Public in particular) wants tidy, flat, one-row-per-thing
-tables. The processed JSON has nested list fields (therapeutic_categories,
-companies, all_reasons) which Tableau cannot read, so those are exploded into
-separate bridge tables and ALSO kept as pipe-joined strings for tooltips.
-
 Outputs land in data/tableau/. Run: python -m src.export_tableau
 """
 
@@ -18,8 +13,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PROCESSED = os.path.join(BASE, "data", "processed")
 OUT = os.path.join(BASE, "data", "tableau")
 
-# Cause severity lookup, mirrored from the risk scoring methodology so the
-# Tableau workbook can show the weight table without recomputing it.
+# Cause severity lookup
 CAUSE_SEVERITY = {
     "Raw Material / API Shortage": 100,
     "Manufacturing / Quality": 85,
@@ -87,7 +81,7 @@ def pipe(values):
     return " | ".join(values) if values else ""
 
 
-# ── 1. Fact table: one row per FDA shortage event ────────────────────────
+# Fact table
 
 def export_events(events):
     rows, bridge = [], []
@@ -132,7 +126,7 @@ def export_events(events):
     return rows
 
 
-# ── 2. Drug-level risk scores + bridges + score decomposition ────────────
+# Drug-level risk scores + bridges + score decomposition
 
 def export_drug_scores(scores):
     rows, cat_bridge, co_bridge, reason_bridge, components = [], [], [], [], []
@@ -179,8 +173,6 @@ def export_drug_scores(scores):
         for r in reasons:
             reason_bridge.append({"drug": drug, "shortage_reason": r})
 
-        # Long format: one row per scoring component. This is the shape the
-        # "score decomposition" stacked bar needs in Tableau.
         for label, weight, score_key, detail_key in SCORE_WEIGHTS:
             raw = d.get(score_key, 0)
             components.append({
@@ -202,7 +194,7 @@ def export_drug_scores(scores):
     return rows
 
 
-# ── 3. Anomaly detection output ──────────────────────────────────────────
+# Anomaly detection output
 
 def export_anomalies(anom):
     cats = [{
@@ -233,8 +225,6 @@ def export_anomalies(anom):
         monthly.append({
             "period": period,
             "period_date": f"{period}-01" if len(period) == 7 else "",
-            # Named shortage_count, not count — "Count" shadows Tableau's
-            # built-in aggregate and reads ambiguously in the field list.
             "shortage_count": a.get("count", 0),
             "rolling_mean": a.get("rolling_mean", ""),
             "rolling_std": a.get("rolling_std", ""),
@@ -245,7 +235,7 @@ def export_anomalies(anom):
         write_csv("temporal_anomalies.csv", monthly, list(monthly[0].keys()))
 
 
-# ── 4. Pre-aggregated helper tables + KPI tiles ──────────────────────────
+# Pre-aggregated helper tables + KPI tiles
 
 def export_aggregates(events, drugs):
     reasons = Counter(e["shortage_reason"] for e in events if e["shortage_reason"])
@@ -274,8 +264,6 @@ def export_aggregates(events, drugs):
 
     active = sum(1 for e in events if e["is_active"] == "TRUE")
     disc = sum(1 for e in events if "discontinu" in e["status"].lower())
-    # Mean over events that actually recorded a duration, truncated — matches
-    # the figure the pipeline and README report (2,018 days).
     durations = [e["duration_days"] for e in events if e["duration_days"]]
     avg_dur = int(sum(durations) / len(durations)) if durations else 0
 

@@ -7,10 +7,6 @@ Computes composite risk scores for each drug based on four weighted signals:
   - Cause Severity (25%): Severity of the underlying shortage cause.
   - Current Status (20%): Active shortages receive a multiplier.
 
-This mirrors Exiger's approach of generating risk assessments on suppliers
-to make insights actionable for supply chain resiliency.
-
-Author: Alexander Peralta
 """
 
 import json
@@ -18,9 +14,8 @@ import os
 from collections import Counter, defaultdict
 
 
-# ─── CAUSE SEVERITY TAXONOMY ────────────────────────────
+# CAUSE SEVERITY
 # Higher scores = deeper structural risk to supply chain
-# Aligned with Exiger's risk signal categorization
 
 CAUSE_SEVERITY = {
     "Raw Material / API Shortage": 1.0,     # Upstream dependency failure
@@ -63,20 +58,20 @@ def compute_drug_scores(cleaned_records):
     for drug, recs in drug_records.items():
         n = len(recs)
 
-        # ── Signal 1: Recurrence Frequency (30%) ────────────
+        # Signal 1: Recurrence Frequency (30%)
         recurrence_score = min(n / max_recurrence, 1.0)
 
-        # ── Signal 2: Shortage Duration (25%) ───────────────
+        #  Signal 2: Shortage Duration (25%)
         durations = [r["duration_days"] for r in recs if r["duration_days"] > 0]
         avg_duration = sum(durations) / len(durations) if durations else 0
         duration_score = min(avg_duration / max_duration, 1.0)
 
-        # ── Signal 3: Cause Severity (25%) ──────────────────
+        # ── Signal 3: Cause Severity (25%) 
         # Take maximum severity observed across all shortage events
         severities = [CAUSE_SEVERITY.get(r["shortage_reason"], 0.5) for r in recs]
         cause_score = max(severities)
 
-        # ── Signal 4: Current Status (20%) ──────────────────
+        # ── Signal 4: Current Status (20%) 
         has_current = any(r["status"] == "Current" for r in recs)
         has_unavailable = any(r["availability"] == "Unavailable" for r in recs)
 
@@ -87,7 +82,7 @@ def compute_drug_scores(cleaned_records):
         else:
             status_score = 0.2      # Resolved/Discontinued
 
-        # ── Composite Score ─────────────────────────────────
+        # Composite Score
         composite = (
             0.30 * recurrence_score
             + 0.25 * duration_score
@@ -95,7 +90,7 @@ def compute_drug_scores(cleaned_records):
             + 0.20 * status_score
         ) * 100  # Scale to 0-100
 
-        # ── Metadata ────────────────────────────────────────
+        # Metadata
         categories = []
         for r in recs:
             categories.extend(r["therapeutic_categories"])

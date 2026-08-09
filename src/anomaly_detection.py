@@ -1,13 +1,7 @@
 """
 Anomaly Detection Module
-=========================
 Identifies therapeutic categories and individual drugs with statistically
 unusual shortage patterns using Z-score analysis.
-
-This parallels Exiger's disruption detection capabilities — flagging issues
-early and tying them to exact products and categories.
-
-Author: Alexander Peralta
 """
 
 import json

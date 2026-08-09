@@ -1,7 +1,5 @@
 """
 FDA Drug Shortage Supply Chain Risk Dashboard
-==============================================
-Main entry point. Runs the full pipeline:
   1. ETL: Ingest and clean FDA shortage data
   2. Risk Scoring: Compute composite risk scores per drug
   3. Anomaly Detection: Flag statistical outliers
@@ -12,7 +10,6 @@ Usage:
     python main.py              # Run full pipeline
     python main.py --pipeline   # Same, minus the closing next-steps hint
 
-Author: Alexander Peralta
 """
 
 import json

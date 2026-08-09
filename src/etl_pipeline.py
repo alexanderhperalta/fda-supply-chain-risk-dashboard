@@ -1,10 +1,7 @@
 """
-FDA Drug Shortage ETL Pipeline
-===============================
 Ingests raw shortage data from the FDA openFDA API, cleans and standardizes
-fields, computes derived features, and outputs an analysis-ready dataset.
+fields, computes derived features, and outputs a dataset.
 
-Author: Alexander Peralta
 Data Source: https://api.fda.gov/drug/shortages.json
 """
 
@@ -16,16 +13,16 @@ from datetime import datetime
 from collections import Counter, defaultdict
 
 
-# ─── CONFIG ──────────────────────────────────────────────
+# Configuration
 
 API_BASE = "https://api.fda.gov/drug/shortages.json"
 LIMIT = 100
 OUTPUT_RAW = "data/raw/fda_shortages_raw.json"
 OUTPUT_CLEAN = "data/processed/fda_shortages_cleaned.json"
-RATE_LIMIT_DELAY = 0.5  # seconds between API calls
+RATE_LIMIT_DELAY = 0.5
 
 
-# ─── INGESTION ───────────────────────────────────────────
+# Ingestion
 
 def fetch_all_records():
     """Pull all shortage records from the FDA openFDA API with pagination."""
@@ -62,7 +59,7 @@ def fetch_all_records():
     return all_results
 
 
-# ─── CLEANING & STANDARDIZATION ─────────────────────────
+# Cleaning and standardization
 
 def parse_date(date_str):
     """Parse FDA date formats into datetime objects."""
@@ -77,7 +74,6 @@ def parse_date(date_str):
 
 
 # Canonical shortage reason categories
-# Mirrors Exiger's approach of standardizing risk signals into actionable categories
 REASON_MAP = {
     "discontinu": "Discontinuation",
     "active ingredient": "Raw Material / API Shortage",
@@ -93,13 +89,6 @@ REASON_MAP = {
 
 
 def standardize_reason(shortage_reason, related_info):
-    """
-    Map raw shortage reasons to canonical categories.
-
-    The FDA data contains free-text reasons and related_info fields.
-    We standardize these into 7 categories that align with
-    supply chain risk taxonomy.
-    """
     reason = (shortage_reason or "").lower().strip()
     related = (related_info or "").lower().strip()
 
@@ -118,7 +107,7 @@ def standardize_reason(shortage_reason, related_info):
 
 
 def standardize_availability(availability):
-    """Normalize messy availability strings (includes typos in source data)."""
+    """Normalize availability strings (includes typos in source data)."""
     av = (availability or "").lower().strip()
     if "unavailable" in av:
         return "Unavailable"
@@ -132,7 +121,7 @@ def standardize_availability(availability):
 
 
 def clean_record(raw):
-    """Transform a raw FDA record into a cleaned, standardized record."""
+    """Transform a raw FDA record into a standardized record."""
     posting_date = parse_date(raw.get("initial_posting_date"))
     update_date = parse_date(raw.get("update_date"))
 
@@ -213,7 +202,6 @@ def run_pipeline(raw_data=None):
 
 
 if __name__ == "__main__":
-    # Check if raw data already exists
     if os.path.exists(OUTPUT_RAW):
         print(f"Found existing raw data at {OUTPUT_RAW}")
         with open(OUTPUT_RAW) as f:
