@@ -1,14 +1,6 @@
 # FDA Drug Shortage Supply Chain Risk Dashboard
 
-**A Prototype Risk Scoring & Visibility Platform for Healthcare Supply Chains**
-
-> *Paralleling Exiger's 1Exiger & ExploreRx platforms — mapping pharmaceutical supply chains, scoring supplier risk, and surfacing actionable intelligence for non-technical government stakeholders.*
-
-![Python](https://img.shields.io/badge/Python-3.10+-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Data](https://img.shields.io/badge/Data-FDA%20openFDA-orange)
-
----
+**Risk Scoring & Visibility Platform for Healthcare Supply Chains**
 
 ## Overview
 
@@ -268,9 +260,3 @@ fda-supply-chain-risk/
 - Email: ahperalt@gmail.com
 - [LinkedIn](http://linkedin.com/in/alexander--peralta)
 - [GitHub](https://github.com/alexanderhperalta)
-
----
-
-## License
-
-MIT License. FDA data is public domain per openFDA terms of service.
