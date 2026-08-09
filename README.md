@@ -1,7 +1,5 @@
 # FDA Drug Shortage Supply Chain Risk Dashboard
 
-**Risk Scoring & Visibility Platform for Healthcare Supply Chains**
-
 ## Overview
 
 Healthcare supply chains are opaque. Active pharmaceutical ingredients are heavily sourced from countries representing geopolitical risk, country-of-origin labeling is inconsistent, and consolidation among generic manufacturers has reduced competition, leading to shortages and price volatility.
