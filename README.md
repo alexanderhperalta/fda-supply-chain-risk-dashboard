@@ -23,7 +23,7 @@ $$z = \frac{x - \mu}{\sigma}$$
 Highest-Risk Drug: Lidocaine Hydrochloride Injection (Score: 85.7), currently suffering from 70 distinct shortage events and an active unavailability spanning an average duration of over 12 years.
 
 ## Dashboard Example
-![Dashboard Example: Shortage Causes](images/Shortage Causes.png)
+![Dashboard Example: Shortage Causes](images/Shortage-Causes.png)
 
 ## Quick Start
 You can run the complete ETL, risk scoring, and anomaly detection pipeline using Python 3.10+.
