@@ -4,6 +4,8 @@
 
 This project provides a healthcare supply chain risk dashboard leveraging public FDA openFDA data. By computing composite risk scores and detecting anomalies, it brings transparency to opaque supply chains, manufacturer consolidation, and geopolitical risks.
 
+[Link to Dashboard on Tableau Public](https://public.tableau.com/app/profile/alexander.peralta/viz/fda-supply-chain-risk-dashboard/RiskLeaderboard?publish=yes)
+
 ## Key Findings
 
 The engine evaluates 1,692 shortage records across 248 unique drugs to generate a composite risk score (0–100). The scoring relies on four weighted signals:
@@ -19,6 +21,9 @@ $$z = \frac{x - \mu}{\sigma}$$
 - Pediatrics ($z = 1.69$): 284 records showing cross-cutting formulation vulnerabilities.
 
 Highest-Risk Drug: Lidocaine Hydrochloride Injection (Score: 85.7), currently suffering from 70 distinct shortage events and an active unavailability spanning an average duration of over 12 years.
+
+## Dashboard Example
+!(images/Shortage Causes.png)
 
 ## Quick Start
 You can run the complete ETL, risk scoring, and anomaly detection pipeline using Python 3.10+.
