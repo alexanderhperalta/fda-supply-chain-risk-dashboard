@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project provides a prototype healthcare supply chain risk dashboard leveraging public FDA openFDA data. By computing composite risk scores and detecting anomalies, it brings transparency to opaque supply chains, manufacturer consolidation, and geopolitical risks.
+This project provides a healthcare supply chain risk dashboard leveraging public FDA openFDA data. By computing composite risk scores and detecting anomalies, it brings transparency to opaque supply chains, manufacturer consolidation, and geopolitical risks.
 
 ## Key Findings
 
